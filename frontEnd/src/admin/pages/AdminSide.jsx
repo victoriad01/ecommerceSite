@@ -7,8 +7,9 @@ const Body = styled.div`
   display: flex;
 `
 const BodyLeft = styled.div`
-  flex: 5;
+  flex: 4;
 `
+const Note = styled.div``
 function adminpageside() {
   return (
     <>
@@ -16,11 +17,7 @@ function adminpageside() {
       <Body>
         <SideBar />
         <BodyLeft>
-          Lorem, ipsum dolor sit amet consectetur adipisicing elit. Aspernatur
-          eius ut odio mollitia veniam pariatur amet, repudiandae rem ab facilis
-          deserunt, esse cupiditate sequi doloribus quaerat voluptas laborum id
-          molestias. Accusamus, magnam. Omnis non delectus saepe pariatur nam
-          explicabo exercitationem sint iure blanditiis ex.
+          <Note>Lorem</Note>
         </BodyLeft>
       </Body>
     </>

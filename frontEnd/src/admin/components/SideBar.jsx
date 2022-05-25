@@ -7,7 +7,7 @@ const SideBarContainer = styled.div`
   height: calc(100vh - 50px);
   background-color: teal;
   position: sticky;
-  top: 50;
+  top: 50px;
 `
 
 const SideBarWrapper = styled.div`
