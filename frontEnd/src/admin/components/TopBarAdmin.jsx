@@ -7,7 +7,7 @@ import profilePicture from '../../Pictures/IMG_20190319_210438.jpg'
 const TopBar = styled.div`
   width: 100%;
   height: 50px;
-  background-color: #f0f8f7;
+  background-color: #ffffff;
   position: sticky;
   top: 0;
   z-index: 999;
@@ -22,7 +22,7 @@ const TopBarWrapper = styled.div`
 const TopLeft = styled.div``
 
 const Logo = styled.span`
-  font-weight: bold;
+  font-weight: lighter;
   font-size: 30px;
   color: #000000;
   cursor: pointer;
@@ -64,7 +64,7 @@ function TopBarAdmin() {
     <TopBar>
       <TopBarWrapper>
         <TopLeft>
-          <Logo>vi-auto</Logo>
+          <Logo>VI-Auto</Logo>
         </TopLeft>
         <TopRight>
           <TopBarIconContainer>
