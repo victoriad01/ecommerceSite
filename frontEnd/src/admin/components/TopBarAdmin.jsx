@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { NotificationsNone, Language, Settings } from '@mui/icons-material'
 
 import profilePicture from '../../Pictures/IMG_20190319_210438.jpg'
+import { Link } from 'react-router-dom'
 
 const TopBar = styled.div`
   width: 100%;
@@ -64,7 +65,9 @@ function TopBarAdmin() {
     <TopBar>
       <TopBarWrapper>
         <TopLeft>
-          <Logo>VI-Auto</Logo>
+          <Link to='/onlyadmin' style={{ textDecoration: 'none' }}>
+            <Logo>VI-AutoAdmin</Logo>
+          </Link>
         </TopLeft>
         <TopRight>
           <TopBarIconContainer>

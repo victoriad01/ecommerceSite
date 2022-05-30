@@ -1,3 +1,6 @@
+import image1 from '../../Pictures/720px/BenzWhiteCar1.jpg'
+import image2 from '../../Pictures/edited2.jpg'
+
 export const userData = [
   {
     name: 'Jan',
@@ -46,5 +49,226 @@ export const userData = [
   {
     name: 'Dec',
     'Active User': 1490,
+  },
+]
+
+export const productData = [
+  {
+    name: 'Jan',
+    Sales: 4000,
+  },
+  {
+    name: 'Feb',
+    Sales: 3000,
+  },
+  {
+    name: 'Mar',
+    Sales: 2000,
+  },
+]
+
+export const rows = [
+  {
+    id: 1,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 2,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 3,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 4,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 5,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 6,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 7,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 8,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 9,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+  {
+    id: 10,
+    username: 'victoriad01',
+    avatar: image2,
+    email: 'riad@gmail.com',
+    status: 'active',
+    transaction: '$15,000.00',
+  },
+]
+
+export const productRows = [
+  {
+    id: 1,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 2,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 3,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 4,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 5,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 6,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 7,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 8,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 9,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 10,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 11,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 12,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 13,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 14,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
+  },
+  {
+    id: 15,
+    name: 'Benz White Car',
+    img: image1,
+    stock: 200,
+    status: 'active',
+    price: '$15,000.00',
   },
 ]

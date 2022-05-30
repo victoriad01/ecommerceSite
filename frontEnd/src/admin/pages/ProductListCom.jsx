@@ -1,19 +1,20 @@
 import React, { useState } from 'react'
 import styled from 'styled-components'
 import { DataGrid } from '@mui/x-data-grid'
-
 import { DeleteForeverRounded } from '@mui/icons-material'
 
-import { rows } from '../components/dummyData'
+import { productRows } from '../components/dummyData'
 import { Link } from 'react-router-dom'
+
 const Container = styled.div`
   flex: 4;
+  padding: 0px 20px;
 `
-const User = styled.div`
+const Product = styled.div`
   display: flex;
   align-items: center;
 `
-const UserImg = styled.img`
+const ProductImg = styled.img`
   width: 32px;
   height: 32px;
   border-radius: 50%;
@@ -35,37 +36,38 @@ const EditButton = styled.button`
   font-size: 12px;
 `
 
-function UserList() {
+function ProductsComList() {
+  const [data, setData] = useState(productRows)
   const handleDelete = (id) => {
     setData(data.filter((item) => item.id !== id))
   }
-  const [data, setData] = useState(rows)
+
   const columns = [
     { field: 'id', headerName: 'ID', width: 70 },
     {
-      field: 'user',
-      headerName: 'User',
+      field: 'product',
+      headerName: 'Product',
       width: 200,
       renderCell: (params) => {
         return (
           <>
-            <User>
-              <UserImg src={params.row.avatar} alt='user' />
-              {params.row.username}
-            </User>
+            <Product>
+              <ProductImg src={params.row.img} alt='the product' />
+              {params.row.name}
+            </Product>
           </>
         )
       },
     },
-    { field: 'email', headerName: 'Email', width: 200 },
+    { field: 'stock', headerName: 'Stock', width: 200 },
     {
       field: 'status',
       headerName: 'Status',
       width: 130,
     },
     {
-      field: 'transaction',
-      headerName: 'Transaction Volume',
+      field: 'price',
+      headerName: 'Price',
       sortable: false,
       width: 160,
     },
@@ -76,7 +78,7 @@ function UserList() {
       renderCell: (params) => {
         return (
           <Action>
-            <Link to={'/user/' + params.row.id}>
+            <Link to={'/product/' + params.row.id}>
               <EditButton>Edit</EditButton>
             </Link>
             <DeleteForeverRounded
@@ -88,14 +90,12 @@ function UserList() {
       },
     },
   ]
-
   return (
     <Container>
       <DataGrid
         rows={data}
         columns={columns}
         pageSize={9}
-        rowsPerPageOptions={[5]}
         checkboxSelection
         disableSelectionOnClick
       />
@@ -103,4 +103,4 @@ function UserList() {
   )
 }
 
-export default UserList
+export default ProductsComList

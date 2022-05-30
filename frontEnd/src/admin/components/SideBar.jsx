@@ -1,5 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 import {
   Dashboard,
   Timeline,
@@ -61,13 +62,26 @@ const Active = styled.div`
   width: 100%;
 `
 function SideBar() {
+  const navigate = useNavigate()
+
+  const handleUser = () => {
+    navigate('/userlistpage')
+  }
+
+  const handleProducts = () => {
+    navigate('/products')
+  }
+
+  const handleHome = () => {
+    navigate('/onlyadmin')
+  }
   return (
     <SideBarContainer>
       <SideBarWrapper>
         <SideBarMenu>
           <SideBarTitle>DASHBROAD</SideBarTitle>
           <SidebarList>
-            <SidebarListContent>
+            <SidebarListContent onClick={handleHome}>
               <Active>
                 <Dashboard style={{ marginRight: '8px', fontSize: '20px' }} />
                 Home
@@ -88,11 +102,11 @@ function SideBar() {
         <SideBarMenu>
           <SideBarTitle>Quick Menu</SideBarTitle>
           <SidebarList>
-            <SidebarListContent>
+            <SidebarListContent onClick={() => handleUser()}>
               <Group style={{ marginRight: '8px', fontSize: '20px' }} />
               Users
             </SidebarListContent>
-            <SidebarListContent>
+            <SidebarListContent onClick={handleProducts}>
               <QrCodeRounded style={{ marginRight: '8px', fontSize: '20px' }} />
               Products
             </SidebarListContent>

@@ -14,6 +14,12 @@ import Navbar from './components/Navbar'
 import Footer from './components/Footer'
 import Error from './pages/Error'
 import AdminSide from './admin/pages/AdminSide'
+import Userlistpage from './admin/pages/Userlist/userlistpage'
+import Userpage from './admin/pages/User/userpage'
+import NewUser from './admin/pages/NewUser/NewUser'
+import ProductsList from './admin/pages/Products/ProductsList'
+import SingleProduct from './admin/pages/Product/SingleProduct'
+import NewProduct from './admin/pages/Newproduct/NewProduct'
 
 const MainApp = ({ children }) => {
   return (
@@ -94,8 +100,17 @@ function App() {
             </MainApp>
           }
         />
+
         <Route path='*' element={<Error />} />
+
         <Route path='/onlyadmin' element={<AdminSide />} />
+        <Route path='/userlistpage' element={<Userlistpage />} />
+        <Route path='/user/:userId' element={<Userpage />} />
+        <Route path='/user/newuser' element={<NewUser />} />
+
+        <Route path='/products' element={<ProductsList />} />
+        <Route path='/product/:productId' element={<SingleProduct />} />
+        <Route path='/newproduct' element={<NewProduct />} />
       </Routes>
     </Router>
   )
