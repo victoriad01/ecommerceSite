@@ -69,7 +69,7 @@ function SideBar() {
   }
 
   const handleProducts = () => {
-    navigate('/products')
+    navigate('/productss')
   }
 
   const handleHome = () => {

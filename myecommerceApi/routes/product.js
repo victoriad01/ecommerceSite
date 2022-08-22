@@ -1,13 +1,9 @@
+const { query } = require('express')
 const Product = require('../models/Product')
-const {
-  verifyToken,
-  verifyTokenAndAuthorization,
-  verifyTokenAndAdmin,
-} = require('./verifyToken')
+const { verifyTokenAndAdmin } = require('./verifyToken')
 const router = require('express').Router()
 
 // CREATE PRODUCT
-
 router.post('/', verifyTokenAndAdmin, async (req, res) => {
   const newProduct = new Product(req.body)
 
@@ -43,7 +39,7 @@ router.delete('/:id', verifyTokenAndAdmin, async (req, res) => {
   }
 })
 
-// GET OR FIND PRODUCT
+// GET OR FIND A PRODUCT
 router.get('/find/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id)
@@ -60,9 +56,8 @@ router.get('/', async (req, res) => {
   const qBrand = req.query.brand
   try {
     let products
-
     if (qNew) {
-      products = await Product.find().sort({ createdAt: -1 }).limit(1)
+      products = await Product.find().sort({ createdAt: -1 }).limit(5)
     } else if (qCategory) {
       products = await Product.find({ categories: { $in: [qCategory] } })
     } else if (qBrand) {
@@ -70,7 +65,6 @@ router.get('/', async (req, res) => {
     } else {
       products = await Product.find()
     }
-
     res.status(200).json(products)
   } catch (err) {
     res.status(500).json(err)

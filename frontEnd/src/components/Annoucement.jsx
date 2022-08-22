@@ -13,7 +13,10 @@ const Container = styled.div`
   font-weight: 500;
   padding: 5px;
   letter-spacing: 0.1rem;
-  ${mobile({ textAlign: 'center', fontSize: '10px' })}
+  position: sticky;
+  top: 0;
+  z-index: 999;
+  ${mobile({ textAlign: 'center', fontSize: '10px' })};
 `
 
 function Annoucement() {

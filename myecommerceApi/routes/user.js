@@ -1,9 +1,9 @@
 const User = require('../models/User')
 const {
-  verifyToken,
   verifyTokenAndAuthorization,
   verifyTokenAndAdmin,
 } = require('./verifyToken')
+
 const router = require('express').Router()
 
 // UPDATE USER
@@ -36,7 +36,7 @@ router.delete('/:id', verifyTokenAndAuthorization, async (req, res) => {
   }
 })
 
-// GET OR FIND USER
+// GET OR FIND A USER
 router.get('/find/:id', verifyTokenAndAdmin, async (req, res) => {
   try {
     const user = await User.findById(req.params.id)
@@ -54,6 +54,7 @@ router.get('/', verifyTokenAndAdmin, async (req, res) => {
     const users = query
       ? await User.find().sort({ _id: -1 }).limit(5)
       : await User.find()
+    // Without Any Query
     // const users = await User.find()
     res.status(200).json(users)
   } catch (err) {

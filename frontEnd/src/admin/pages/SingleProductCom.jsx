@@ -1,10 +1,21 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { Link } from 'react-router-dom'
+import { Link, useLocation } from 'react-router-dom'
 import Chart from '../components/Chart'
-import { productData } from '../components/dummyData'
-import image1 from '../../Pictures/720px/BenzWhiteCar1.jpg'
+
 import { Publish } from '@mui/icons-material'
+import { useSelector, useDispatch } from 'react-redux'
+import { useMemo } from 'react'
+import { userRequest } from '../../requestMethod'
+
+import {
+  getStorage,
+  ref,
+  uploadBytesResumable,
+  getDownloadURL,
+} from 'firebase/storage'
+import App from '../../firebase'
+import { updateProduct } from '../../redux/apiCalls'
 
 const Container = styled.div`
   flex: 4;
@@ -68,9 +79,17 @@ const ProductInfoItem = styled.div`
 `
 const ProductInfoKey = styled.span`
   margin-top: 5px;
+  margin-right: 50px;
+  display: flex;
+  width: 40%;
 `
 const ProductInfoValue = styled.span`
-  font-weight: 200;
+  font-weight: 800;
+  color: black;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-left: 20px;
 `
 const ProductButtom = styled.div`
   flex: 1;
@@ -124,6 +143,115 @@ const ProductUploadButton = styled.button`
 `
 
 function SingleProductCom() {
+  const dispatch = useDispatch()
+  const location = useLocation()
+  const productId = location.pathname.split('/')[2]
+  const [pStats, setPStats] = useState([])
+  const [uPicture, setUPicture] = useState(null)
+  const [details, setDetails] = useState(null)
+  const [cat, setCat] = useState([])
+
+  console.log(details)
+  console.log(cat)
+
+  const handleChange = (e) => {
+    setDetails((prev) => {
+      return { ...prev, [e.target.name]: e.target.value }
+    })
+  }
+
+  const handleCat = (e) => {
+    setCat(e.target.value.split(','))
+  }
+
+  const handleUpdate = (e) => {
+    e.preventDefault()
+    const fileName = new Date().getTime() + uPicture.name
+    const storage = getStorage(App)
+    const storageRef = ref(storage, fileName)
+    const uploadTask = uploadBytesResumable(storageRef, uPicture)
+
+    // Register three observers:
+    // 1. 'state_changed' observer, called any time the state changes
+    // 2. Error observer, called on failure
+    // 3. Completion observer, called on successful completion
+    uploadTask.on(
+      'state_changed',
+      (snapshot) => {
+        // Observe state change events such as progress, pause, and resume
+        // Get task progress, including the number of bytes uploaded and the total number of bytes to be uploaded
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100
+        console.log('Upload is ' + progress + '% done')
+        switch (snapshot.state) {
+          case 'paused':
+            console.log('Upload is paused')
+            break
+          case 'running':
+            console.log('Upload is running')
+            break
+          default:
+        }
+      },
+      (error) => {
+        // Handle unsuccessful uploads
+      },
+      () => {
+        // Handle successful uploads on complete
+        // For instance, get the download URL: https://firebasestorage.googleapis.com/...
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadURL) => {
+          console.log('File available at', downloadURL)
+
+          console.log({ ...details, img: downloadURL, categories: cat })
+
+          const uProduct = { ...details, img: downloadURL, categories: cat }
+
+          // updateProduct(uProduct, dispatch)
+        })
+      }
+    )
+  }
+
+  const product = useSelector((state) =>
+    state.product.products.find((product) => product._id === productId)
+  )
+
+  const MONTHS = useMemo(
+    () => [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ],
+    []
+  )
+
+  useEffect(() => {
+    const getStats = async () => {
+      try {
+        const res = await userRequest.get('/orders/income?pid' + productId)
+
+        const sorted = res.data.sort((a, b) => {
+          return a._id - b._id
+        })
+        sorted.map((item) =>
+          setPStats((prev) => [
+            ...prev,
+            { name: MONTHS[item._id - 1], Sales: item.total },
+          ])
+        )
+      } catch (error) {}
+    }
+    getStats()
+  }, [MONTHS, productId])
+
   return (
     <Container>
       <ProductTitleContainer>
@@ -134,29 +262,25 @@ function SingleProductCom() {
       </ProductTitleContainer>
       <ProductTop>
         <TopLeft>
-          <Chart data={productData} dataKey='Sales' title='Sales Performance' />
+          <Chart data={pStats} dataKey='Sales' title='Sales Performance' />
         </TopLeft>
         <TopRight>
           <ProductInfoTop>
-            <ProductInfoImage src={image1} />
-            <ProductName>Benz White Car</ProductName>
+            <ProductInfoImage src={product.img} />
+            <ProductName>{product.title}</ProductName>
           </ProductInfoTop>
           <ProductInfoButtom>
             <ProductInfoItem>
               <ProductInfoKey>Product id:</ProductInfoKey>
-              <ProductInfoValue>123</ProductInfoValue>
+              <ProductInfoValue>{product._id}</ProductInfoValue>
             </ProductInfoItem>
             <ProductInfoItem>
               <ProductInfoKey>Sales:</ProductInfoKey>
               <ProductInfoValue>4210</ProductInfoValue>
             </ProductInfoItem>
             <ProductInfoItem>
-              <ProductInfoKey>Active:</ProductInfoKey>
-              <ProductInfoValue>Yes</ProductInfoValue>
-            </ProductInfoItem>
-            <ProductInfoItem>
               <ProductInfoKey>In Stock:</ProductInfoKey>
-              <ProductInfoValue>no</ProductInfoValue>
+              <ProductInfoValue>{product.inStock}</ProductInfoValue>
             </ProductInfoItem>
           </ProductInfoButtom>
         </TopRight>
@@ -165,22 +289,63 @@ function SingleProductCom() {
         <ProductForm>
           <ProductFormLeft>
             <Label>Product Name</Label>
-            <Input type='text' placeholder='product name' />
+            <Input
+              type='text'
+              name='title'
+              placeholder={product.title}
+              onChange={handleChange}
+            />
+
+            <Label>Desciption</Label>
+            <Input
+              type='text'
+              name='desc'
+              placeholder={product.desc}
+              onChange={handleChange}
+            />
+
+            <Label>Product Price</Label>
+            <Input
+              type='text'
+              name='price'
+              placeholder={product.price}
+              onChange={handleChange}
+            />
+
+            <Label>Product Categories</Label>
+            <Input
+              type='text'
+              name='categories'
+              placeholder={product.categories}
+              onChange={handleCat}
+            />
+
+            <Label>Product Brand</Label>
+            <Input
+              type='text'
+              name='brand'
+              placeholder={product.brand}
+              onChange={handleChange}
+            />
+
+            <Label>Product Color</Label>
+            <Input
+              type='text'
+              name='color'
+              placeholder={product.color}
+              onChange={handleChange}
+            />
+
             <Label>In Stock</Label>
-            <Select name='instock' id='instock'>
-              <Option value='yes'>Yes</Option>
-              <Option value='no'>No</Option>
-            </Select>
-            <Label>Active</Label>
-            <Select name='active' id='active'>
-              <Option value='yes'>Yes</Option>
-              <Option value='no'>No</Option>
+            <Select name='inStock' id='instock' onChange={handleChange}>
+              <Option value='true'>Yes</Option>
+              <Option value='false'>No</Option>
             </Select>
           </ProductFormLeft>
           <ProductFormRight>
             <ProductUpload>
               <ProductInfoImage
-                src={image1}
+                src={product.img}
                 style={{
                   width: '100px',
                   height: '100px',
@@ -189,12 +354,19 @@ function SingleProductCom() {
                   marginRight: '20px',
                 }}
               />
-              <Label for='file'>
-                <Publish style={{ color: 'blue' }} />
+              <Label htmlfor='file'>
+                <Publish style={{ color: 'blue', cursor: 'pointer' }} />
               </Label>
-              <Input type='file' id='file' style={{ display: 'none' }} />
+              <Input
+                type='file'
+                id='file'
+                // style={{ display: 'none' }}
+                onChange={(e) => setUPicture(e.target.files[0])}
+              />
             </ProductUpload>
-            <ProductUploadButton>Update</ProductUploadButton>
+            <ProductUploadButton onClick={handleUpdate}>
+              Update
+            </ProductUploadButton>
           </ProductFormRight>
         </ProductForm>
       </ProductButtom>

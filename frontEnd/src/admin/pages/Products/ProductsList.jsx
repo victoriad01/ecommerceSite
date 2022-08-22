@@ -8,6 +8,7 @@ const Body = styled.div`
   display: flex;
 `
 function ProductsList() {
+  
   return (
     <>
       <TopBarAdmin />

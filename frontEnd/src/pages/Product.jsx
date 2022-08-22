@@ -1,14 +1,19 @@
 import styled from 'styled-components'
-import React from 'react'
-import image from '../Pictures/720px/BenzSUVBlackGWagon1.jpg'
+import React, { useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import RemoveSharpIcon from '@mui/icons-material/RemoveSharp'
 import { mobile } from '../Responsive'
+import { useLocation } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { publicRequest } from '../requestMethod'
+import { addProduct } from '../redux/cartRedux'
 
 const Container = styled.div``
 const Wrapper = styled.div`
   padding: 100px;
   display: flex;
+  justify-content: center;
+  align-items: center;
   ${mobile({ flexDirection: 'column', padding: '10px' })}
 `
 const ImgContainer = styled.div`
@@ -66,6 +71,11 @@ const FilterColor = styled.div`
   background-color: ${(props) => props.color};
   margin: 0px 5px;
   cursor: pointer;
+
+  box-shadow: 2px 1px 8px -2px rgba(0, 0, 0, 0.58);
+  -webkit-box-shadow: 2px 1px 8px -2px rgba(0, 0, 0, 0.58);
+  -moz-box-shadow: 2px 1px 8px -2px rgba(0, 0, 0, 0.58);
+
   ${mobile({ marginTop: '10px' })}
 `
 const FilterModelSize = styled.select`
@@ -106,48 +116,88 @@ const Button = styled.button`
     background-color: #f8f8f8;
   }
 `
-
 function Product() {
+  const dispatch = useDispatch()
+  const location = useLocation()
+  const id = location.pathname.split('/')[2]
+
+  const [product, setProduct] = useState({})
+  const [quantity, setQuantity] = useState(1)
+  const [color, setColor] = useState('')
+  const [model, setModel] = useState('')
+
+  const changeQuantity = (type) => {
+    if (type === 'dec') {
+      quantity > 1 && setQuantity(quantity - 1)
+    } else {
+      setQuantity(quantity + 1)
+    }
+  }
+
+  useEffect(() => {
+    const getProduct = async () => {
+      try {
+        const res = await publicRequest.get('/products/find/' + id)
+        setProduct(res.data)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getProduct()
+  }, [id])
+
+  const handleClick = () => {
+    dispatch(
+      addProduct({
+        ...product,
+        quantity,
+        color,
+        model,
+        total: product.price * quantity,
+      })
+    )
+  }
+
   return (
     <Container>
       <Wrapper>
         <ImgContainer>
-          <Img src={image} />
+          <Img src={product.img} />
         </ImgContainer>
         <InfoContainer>
-          <Title>G-Class</Title>
-          <Desc>
-            Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-            Aspernatur, saepe esse. Illo nobis natus rerum quidem suscipit
-            officiis quos excepturi quas adipisci sit quasi aliquid, quia
-            assumenda delectus mollitia corporis.
-          </Desc>
-          <Price>$20</Price>
+          <Title>{product.title}</Title>
+          <Desc>{product.desc}</Desc>
+          <Price>$ {product.price}</Price>
           <FilterContainer>
             <Filter>
               <FilterTitle>Color</FilterTitle>
-              <FilterColor color='black' />
-              <FilterColor color='red' />
-              <FilterColor color='gray' />
+              <FilterColor
+                color={product.color}
+                onClick={() => setColor(product.color)}
+              />
             </Filter>
             <Filter>
               <FilterTitle>Model</FilterTitle>
-              <FilterModelSize>
-                <FilterModelOption>2010</FilterModelOption>
-                <FilterModelOption>2015</FilterModelOption>
-                <FilterModelOption>2020</FilterModelOption>
-                <FilterModelOption>2021</FilterModelOption>
-                <FilterModelOption>2022</FilterModelOption>
+              <FilterModelSize onChange={(e) => setModel(e.target.value)}>
+                <FilterModelOption key={product.model}>
+                  {product.model}
+                </FilterModelOption>
               </FilterModelSize>
             </Filter>
           </FilterContainer>
           <AddContainer>
             <AmountContainer>
-              <RemoveSharpIcon style={{ cursor: 'pointer' }} />
-              <Amount>1</Amount>
-              <AddIcon style={{ cursor: 'pointer' }} />
+              <RemoveSharpIcon
+                style={{ cursor: 'pointer' }}
+                onClick={() => changeQuantity('dec')}
+              />
+              <Amount>{quantity}</Amount>
+              <AddIcon
+                style={{ cursor: 'pointer' }}
+                onClick={() => changeQuantity('inc')}
+              />
             </AmountContainer>
-            <Button>Add to Cart</Button>
+            <Button onClick={handleClick}>Add to Cart</Button>
           </AddContainer>
         </InfoContainer>
       </Wrapper>

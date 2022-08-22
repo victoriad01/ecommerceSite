@@ -1,10 +1,12 @@
-import React, { useState } from 'react'
+import React from 'react'
 import styled from 'styled-components'
 import { DataGrid } from '@mui/x-data-grid'
 import { DeleteForeverRounded } from '@mui/icons-material'
 
-import { productRows } from '../components/dummyData'
 import { Link } from 'react-router-dom'
+import { useDispatch, useSelector } from 'react-redux'
+import { useEffect } from 'react'
+import { getProducts, deleteProduct } from '../../redux/apiCalls'
 
 const Container = styled.div`
   flex: 4;
@@ -37,34 +39,37 @@ const EditButton = styled.button`
 `
 
 function ProductsComList() {
-  const [data, setData] = useState(productRows)
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    getProducts(dispatch)
+  }, [dispatch])
+
+  const productFetchedToRedux = useSelector((state) => state.product.products)
+
   const handleDelete = (id) => {
-    setData(data.filter((item) => item.id !== id))
+    deleteProduct(id, dispatch)
   }
 
   const columns = [
-    { field: 'id', headerName: 'ID', width: 70 },
+    { field: '_id', headerName: 'ID', width: 240 },
     {
       field: 'product',
       headerName: 'Product',
-      width: 200,
+      width: 240,
       renderCell: (params) => {
         return (
           <>
             <Product>
-              <ProductImg src={params.row.img} alt='the product' />
-              {params.row.name}
+              <ProductImg src={params.row.img} alt='pd' />
+              {params.row.title}
             </Product>
           </>
         )
       },
     },
-    { field: 'stock', headerName: 'Stock', width: 200 },
-    {
-      field: 'status',
-      headerName: 'Status',
-      width: 130,
-    },
+    { field: 'inStock', headerName: 'Stock', width: 200 },
+
     {
       field: 'price',
       headerName: 'Price',
@@ -78,12 +83,13 @@ function ProductsComList() {
       renderCell: (params) => {
         return (
           <Action>
-            <Link to={'/product/' + params.row.id}>
+            <Link to={'/singleproduct/' + params.row._id}>
               <EditButton>Edit</EditButton>
             </Link>
+
             <DeleteForeverRounded
               style={{ color: 'red', cursor: 'pointer', fontSize: '18px' }}
-              onClick={() => handleDelete(params.row.id)}
+              onClick={() => handleDelete(params.row._id)}
             />
           </Action>
         )
@@ -93,8 +99,9 @@ function ProductsComList() {
   return (
     <Container>
       <DataGrid
-        rows={data}
+        rows={productFetchedToRedux}
         columns={columns}
+        getRowId={(row) => row._id}
         pageSize={9}
         checkboxSelection
         disableSelectionOnClick

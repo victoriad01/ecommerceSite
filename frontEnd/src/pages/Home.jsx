@@ -4,7 +4,6 @@ import Products from '../components/Products'
 import Slider from '../components/Slider'
 import Newsletter from '../components/Newsletter'
 
-
 function Home() {
   return (
     <div>

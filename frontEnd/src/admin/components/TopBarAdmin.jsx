@@ -3,7 +3,9 @@ import styled from 'styled-components'
 import { NotificationsNone, Language, Settings } from '@mui/icons-material'
 
 import profilePicture from '../../Pictures/IMG_20190319_210438.jpg'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import { adminLogout } from '../../redux/adminRedux'
 
 const TopBar = styled.div`
   width: 100%;
@@ -60,7 +62,28 @@ const TopAvatar = styled.img`
   border-radius: 50%;
   cursor: pointer;
 `
+const Logout = styled.p`
+  letter-spacing: 0.09rem;
+  background-color: #f7efef;
+  color: gray;
+  padding: 8px 16px;
+  font-weight: 700;
+  border-radius: 16px;
+  &:hover {
+    color: red;
+  }
+`
+
 function TopBarAdmin() {
+  const dispatch = useDispatch()
+  const navigate = useNavigate()
+
+  const handleLogout = (e) => {
+    e.preventDefault()
+    dispatch(adminLogout())
+    navigate('/adminlogin')
+  }
+
   return (
     <TopBar>
       <TopBarWrapper>
@@ -80,7 +103,13 @@ function TopBarAdmin() {
           <TopBarIconContainer>
             <Settings />
           </TopBarIconContainer>
-          <TopAvatar src={profilePicture} />
+
+          <TopBarIconContainer>
+            <TopAvatar src={profilePicture} />
+          </TopBarIconContainer>
+          <TopBarIconContainer>
+            <Logout onClick={handleLogout}>Logout</Logout>
+          </TopBarIconContainer>
         </TopRight>
       </TopBarWrapper>
     </TopBar>

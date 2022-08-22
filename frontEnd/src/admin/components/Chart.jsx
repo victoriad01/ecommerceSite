@@ -25,7 +25,7 @@ function Chart({ title, data, dataKey, grid }) {
       <ChartTitle>{title}</ChartTitle>
       <ResponsiveContainer width='100%' aspect={4 / 1}>
         <LineChart data={data}>
-          {console.log(data)} <XAxis dataKey='name' stroke='#5550bd' />
+          <XAxis dataKey='name' stroke='#5550bd' />
           <Line type='monotone' dataKey={dataKey} stroke='#5550bd' />
           <Tooltip />
           {grid && <CartesianGrid stroke='#f1f0f0' strokeDasharray='5 5' />}

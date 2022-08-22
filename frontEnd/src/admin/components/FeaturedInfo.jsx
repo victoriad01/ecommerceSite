@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { userRequest } from '../../requestMethod'
 import styled from 'styled-components'
 import { ArrowDownwardOutlined, ArrowUpwardOutlined } from '@mui/icons-material'
 
@@ -50,17 +51,40 @@ const FeaturedSub = styled.span`
 `
 
 function FeaturedInfo() {
+  const [income, setIncome] = useState([])
+  const [perc, setPerc] = useState(0)
+
+  useEffect(() => {
+    const getIncome = async () => {
+      try {
+        const res = await userRequest.get('orders/income')
+        setIncome(res.data)
+        setPerc((res.data[1].total / res.data[0].total) * 100)
+      } catch (error) {
+        console.log(error)
+      }
+    }
+    getIncome()
+  }, [])
+  console.log(income)
+  console.log(perc)
   return (
     <Featured>
       <FeaturedItem>
         <FeaturedTitle>Revenue</FeaturedTitle>
         <FeaturedMoneyContainer>
-          <FeaturedMoney>$5,123</FeaturedMoney>
+          <FeaturedMoney>${income[1]?.total}</FeaturedMoney>
           <FeaturedMoneyRate>
-            -5.24
-            <ArrowRed>
-              <ArrowDownwardOutlined />
-            </ArrowRed>
+            {perc.toFixed(2)}%
+            {perc < 0 ? (
+              <ArrowRed>
+                <ArrowDownwardOutlined />
+              </ArrowRed>
+            ) : (
+              <ArrowGreen>
+                <ArrowUpwardOutlined />
+              </ArrowGreen>
+            )}
           </FeaturedMoneyRate>
         </FeaturedMoneyContainer>
         <FeaturedSub>Compare to last month</FeaturedSub>

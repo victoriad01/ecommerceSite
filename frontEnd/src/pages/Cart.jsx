@@ -1,11 +1,26 @@
-import React from 'react'
+import { React, useState, useEffect } from 'react'
 import styled from 'styled-components'
-import image from '../Pictures/720px/BenzSUVBlackGWagon1.jpg'
-import image2 from '../Pictures/720px/HondaWhiteCar1.jpg'
-import image3 from '../Pictures/720px/BenzBlueCar1.jpg'
-import AddIcon from '@mui/icons-material/Add'
-import RemoveSharpIcon from '@mui/icons-material/RemoveSharp'
+import { NotInterested, RemoveSharp, Add } from '@mui/icons-material/'
+
 import { mobile } from '../Responsive'
+import { useSelector } from 'react-redux'
+import image1 from '../Pictures/logo/vi-auto.jpg'
+import StripeCheckout from 'react-stripe-checkout'
+import { userRequest } from '../requestMethod'
+import { useNavigate } from 'react-router-dom'
+import { useDispatch } from 'react-redux'
+import {
+  clearCart,
+  decreaseCartQuantity,
+  deleteACartItem,
+  increaseCartQuantity,
+} from '../redux/cartRedux'
+import { addOrder } from '../redux/apiCalls'
+
+// const KEY = process.env.REACT_APP_STRIPE
+
+const KEY =
+  'pk_test_51L1u19AyUGwoMrM96nSsyhOAKEpmCf13h0mYqbahJnZh20HMWfmn9gEsrUNJbyatICtB7eZ9ZRBCownbRvvsg11700xKzwJe1H'
 
 const Container = styled.div``
 const Wrapper = styled.div`
@@ -33,7 +48,7 @@ const TopButton = styled.button`
   cursor: pointer;
   border: ${(props) => props.type === 'filled' && 'none'};
   background-color: ${(props) =>
-    props.type === 'filled' ? 'black' : 'transparent'};
+    props.type === 'filled' ? 'red' : 'transparent'};
   color: ${(props) => props.type === 'filled' && 'white'};
   ${mobile({ padding: '5px', margin: '5px' })}
 `
@@ -108,7 +123,6 @@ const ProductPrice = styled.div`
   font-weight: 200;
   ${mobile({ fontSize: '18px', padding: '10px' })}
 `
-
 const Hr = styled.hr`
   background-color: #eee;
   border: none;
@@ -135,131 +149,206 @@ const SummaryItem = styled.div`
 `
 const SummaryItemText = styled.span``
 const SummaryItemPrice = styled.span``
+
 const Button = styled.button`
   width: 100%;
   padding: 10px;
   background-color: teal;
   color: white;
   border: none;
-  cursor: pointer;
   font-weight: 600;
+  cursor: pointer;
+`
+const DeleteCartProduct = styled.button`
+  display: flex;
+  align-items: center;
+  background-color: transparent;
+  border: none;
+  margin-right: 10px;
+`
+const Text = styled.p`
+  color: gray;
+  font-size: 12px;
 `
 
 function Cart() {
+  const cart = useSelector((state) => state.cart)
+  const user = useSelector((state) => state.user.currentUser._id)
+  const likes = useSelector((state) => state.love.likes)
+  const [stripeToken, setStripeToken] = useState(null)
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const handleClick = () => {
+    navigate('/wishlist')
+  }
+  const removeCartItems = (e) => {
+    e.preventDefault()
+    dispatch(clearCart())
+  }
+  const onToken = (token) => {
+    setStripeToken(token)
+  }
+
+  useEffect(() => {
+    const makeRequest = async () => {
+      try {
+        const res = await userRequest.post('/checkout/payment', {
+          tokenId: stripeToken.id,
+          amount: cart.total * 100,
+        })
+        navigate('/paymentsuccess', { data: res.data })
+
+        const userId = user
+
+        // Method A
+        // const productdd = cart.products.map((product) => [
+        //   product._id,
+        //   product.quantity,
+        // ])
+
+        // Method B
+        const productId = cart.products.map((product) => product._id)
+        const quan = cart.products.map((product) => product.quantity)
+        // const pid = {
+        //   ...productId.map((pid, index) => pid + `, ${quan[index]}`),
+        // }
+        const amount = res.data.amount
+        const addressLocation = res.data.billing_details.address
+        const address = addressLocation.city + ', ' + addressLocation.country
+        // const order = {
+        //  userId,
+        //  products: [
+        //   {
+        //     productId: productId[0],
+        //     quantity:  quan[0]
+        //   }
+        //  ],
+        //  amount,
+        //  address,
+        // }
+
+        // console.log(order)
+        // addOrder(order, dispatch)
+        // dispatch(clearCart())
+      } catch (err) {}
+    }
+    stripeToken && makeRequest()
+  }, [stripeToken, cart.total, cart, user, navigate, dispatch])
+
   return (
     <Container>
       <Wrapper>
         <Title>YOUR BAG</Title>
         <Top>
-          <TopButton style={{ border: '2px solid teal' }}>
+          <TopButton
+            style={{ border: '2px solid teal' }}
+            onClick={() => navigate('/')}
+          >
             CONTINUE SHOPPING
           </TopButton>
           <TopTexts>
-            <TopText>Shopping Bag (2)</TopText>
-            <TopText>Your Wishlist (0)</TopText>
+            <TopText>Shopping Bag ({cart.shoppingBag})</TopText>
+            <TopText onClick={handleClick}>Your Wishlist ({likes})</TopText>
           </TopTexts>
-          <TopButton type='filled'>CHECKOUT NOW</TopButton>
+          <TopButton
+            type='filled'
+            style={{
+              fontWeight: 600,
+              fontSize: '16px',
+              letterSpacing: '0.2rem',
+            }}
+            onClick={removeCartItems}
+          >
+            Clear Cart!
+          </TopButton>
         </Top>
         <Buttom>
           <Info>
-            <Product>
-              <ProductDetail>
-                <Image src={image} />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b>G-Class Benz
-                  </ProductName>
-                  <ProductId>
-                    <b>ProductID:</b>93240582490
-                  </ProductId>
-                  <ProductColor color='black' />
-                  <ProductBrand>
-                    <b>ProductBrand:</b>Benz{' '}
-                  </ProductBrand>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveSharpIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 15,000</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src={image2} />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b>Honda Honda
-                  </ProductName>
-                  <ProductId>
-                    <b>ProductID:</b>93240582490
-                  </ProductId>
-                  <ProductColor color='white' />
-                  <ProductBrand>
-                    <b>ProductBrand:</b>Honda{' '}
-                  </ProductBrand>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveSharpIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 15,000</ProductPrice>
-              </PriceDetail>
-            </Product>
-            <Hr />
-            <Product>
-              <ProductDetail>
-                <Image src={image3} />
-                <Details>
-                  <ProductName>
-                    <b>Product:</b> Benz
-                  </ProductName>
-                  <ProductId>
-                    <b>ProductID:</b>93240582490
-                  </ProductId>
-                  <ProductColor color='blue' />
-                  <ProductBrand>
-                    <b>ProductBrand:</b>Benz
-                  </ProductBrand>
-                </Details>
-              </ProductDetail>
-              <PriceDetail>
-                <ProductAmountContainer>
-                  <AddIcon />
-                  <ProductAmount>2</ProductAmount>
-                  <RemoveSharpIcon />
-                </ProductAmountContainer>
-                <ProductPrice>$ 15,000</ProductPrice>
-              </PriceDetail>
-            </Product>
+            {cart.products.map((product) => (
+              <Product key={product._id}>
+                <ProductDetail>
+                  <Image src={product.img} />
+                  <Details>
+                    <ProductName>
+                      <b>Product: </b>
+                      {product.title}
+                    </ProductName>
+                    <ProductId>
+                      <b>ProductID: </b>
+                      {product._id}
+                    </ProductId>
+                    <ProductColor color={product.color} />
+                    <ProductBrand>
+                      <b>ProductBrand: </b>
+                      {product.brand}
+                    </ProductBrand>
+                  </Details>
+                  <DeleteCartProduct
+                    onClick={() => dispatch(deleteACartItem({ product }))}
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <NotInterested style={{ color: 'pink' }} />
+                    <Text>Not Interested</Text>
+                  </DeleteCartProduct>
+                </ProductDetail>
+
+                <PriceDetail>
+                  <ProductAmountContainer>
+                    <Add
+                      // onClick={handleIncQuantity}
+                      onClick={() =>
+                        dispatch(increaseCartQuantity({ product }))
+                      }
+                      style={{ cursor: 'pointer' }}
+                    />
+                    <ProductAmount>{product.quantity}</ProductAmount>
+                    <RemoveSharp
+                      // onClick={handleDecQuantity}
+                      onClick={() =>
+                        dispatch(decreaseCartQuantity({ product }))
+                      }
+                      style={{ cursor: 'pointer' }}
+                    />
+                  </ProductAmountContainer>
+                  <ProductPrice>
+                    $ {product.price * product.quantity}
+                  </ProductPrice>
+                </PriceDetail>
+              </Product>
+            ))}
+
             <Hr />
           </Info>
           <Summary>
             <SummaryTitle>ORDER SUMMARY</SummaryTitle>
             <SummaryItem>
               <SummaryItemText>SubTotal:</SummaryItemText>
-              <SummaryItemPrice>$ 45,000</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Estimated Shipping:</SummaryItemText>
-              <SummaryItemPrice>$ 590</SummaryItemPrice>
+              <SummaryItemPrice>$ 190</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem>
               <SummaryItemText>Shipping Discount:</SummaryItemText>
-              <SummaryItemPrice>$ -590</SummaryItemPrice>
+              <SummaryItemPrice>$ -190</SummaryItemPrice>
             </SummaryItem>
             <SummaryItem type='total'>
               <SummaryItemText>Grand Total:</SummaryItemText>
-              <SummaryItemPrice>$ 45,000</SummaryItemPrice>
+              <SummaryItemPrice>$ {cart.total}</SummaryItemPrice>
             </SummaryItem>
-            <Button>CHECK OUT NOW!</Button>
+            <StripeCheckout
+              name='VI_AUTO'
+              image={image1}
+              billingAddress
+              shippingAddress
+              description={`Total to be paid is $${cart.total}`}
+              amount={cart.total * 100}
+              token={onToken}
+              stripeKey={KEY}
+            >
+              <Button>CHECK OUT NOW!</Button>
+            </StripeCheckout>
           </Summary>
         </Buttom>
       </Wrapper>

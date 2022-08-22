@@ -1,4 +1,5 @@
 const router = require('express').Router()
+
 const stripe = require('stripe')(
   'sk_test_51L1u19AyUGwoMrM9HSD2c41Yx2D7419dxkmqzfzHRtpY4ibV4WLydv6YJEDULwsUEb7xxFE5J61ye4C25Fh7r0KQ00xz7bmQop'
 )
